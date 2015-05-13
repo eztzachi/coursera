@@ -30,8 +30,11 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
-
-
+%calculate prediction per class
+temp = X * all_theta';
+%choose the class with the highest prediction;
+[~,i] = max(temp, [], 2);
+p = i;
 
 
 

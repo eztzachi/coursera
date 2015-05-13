@@ -37,13 +37,14 @@ grad = zeros(size(theta));
 %
 
 
+z = X * theta;
+% unregularized logistic regression
+J = (1/m)*sum(-y.*log(sigmoid(z)) - (1 - y).*log(1-sigmoid(z)));
+grad = (1/m)* (X' * (sigmoid(z) - y));
 
-
-
-
-
-
-
+% regularized logistic regression
+J = J + (lambda/(2*m)) * sum(theta(2:end).^2);
+grad(2:end) = grad(2:end) + (lambda/m) * theta(2:end);
 
 % =============================================================
 
