@@ -1,2 +1,2 @@
 # coursera
-Coursera data science track
+Coursera courses
