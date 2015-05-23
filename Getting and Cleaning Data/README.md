@@ -8,7 +8,7 @@ Installation
 ------------
  1. This project uses the [dplyr](http://cran.r-project.org/web/packages/dplyr/index.html) package. To make sure it is installed  and up to date please run in the R console:
 `install.packages("dplyr")`
- 2. Download the [raw data](https://d396qusza40orc.cloudfront.net/getdata/projectfiles/UCI%20HAR%20Dataset.zip) and make sure the following files exists in your active directory:
+ 2. Download the [raw data](https://d396qusza40orc.cloudfront.net/getdata/projectfiles/UCI%20HAR%20Dataset.zip), extract it and make sure to copy the following files to your active directory:
   * subject_train.txt
   * X_train.txt
   * y_train.txt
@@ -17,3 +17,4 @@ Installation
   * y_test.txt
   * features.txt
   * activity_labels.txt
+3. Make sure the run_analysis.R script from this repository exist in your working directory as well
