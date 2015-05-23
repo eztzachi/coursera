@@ -17,4 +17,4 @@ Installation
   * y_test.txt
   * features.txt
   * activity_labels.txt
-3. Make sure the run_analysis.R script from this repository exist in your working directory as well
+ 3. Make sure the run_analysis.R script from this repository exist in your working directory as well
