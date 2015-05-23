@@ -25,7 +25,7 @@ Usage
  1. Make sure the active directory in your R console points to the right path where all the files mentioned above are stored: `setwd("/path/to/working/directory/")`
  2. Run the following command, which will run the script: `source("run_analysis.R")`
  3. The tidy data will we written to to a file named tidy_data.txt under the same working directory.
- 4. Also, the tidy_data variable which contains the tidy_data set will be added to the R environment in case farther usage is required.
+ 4. Also, a tidy_data variable which contains the tidy_data set will be added to the R environment in case farther usage is required.
 
 
 > **Note:**
