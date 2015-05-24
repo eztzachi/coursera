@@ -47,8 +47,9 @@ names(tidy_data)<-gsub("_Y$", "_y", names(tidy_data))
 names(tidy_data)<-gsub("_Z$", "_z", names(tidy_data))
 names(tidy_data)<-gsub("^t", "time", names(tidy_data))
 names(tidy_data)<-gsub("^f", "frequency", names(tidy_data))
+names(tidy_data)<-gsub("BodyBody", "Body", names(tidy_data))
 
-## Part 5 - Creates an independent tidy data set with the average of each 
+## Part 5 - Create an independent tidy data set with the average of each 
 ## variable for each activity and each subject
 tidy_data <- tidy_data %>%
     group_by(subject_id, activity_type) %>%
@@ -57,6 +58,6 @@ tidy_data <- tidy_data %>%
 # write the tidy data set to file
 write.table(tidy_data, file = "tidy_data.txt", row.name=FALSE)
 
-# remove temporary local variables from environment to save memory
+# remove temporary local variables from environment to release memory
 rm(subject_train, X_train, y_train, subject_test, X_test, y_test, 
    activityLabels, featureLabels, merged_test, merged_train, merged_data)
