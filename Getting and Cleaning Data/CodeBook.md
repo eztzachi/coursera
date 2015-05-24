@@ -17,8 +17,8 @@ Finally a Fast Fourier Transform (FFT) was applied to some of these signals prod
 
 How was the tidy data created
 ------------
- 1. The training and the test sets were merged to create one data set. Matching features were added to describe the columns.
- 2. Only the measurements containing the mean or the standard deviation were selected (feature name should contain either the "mean()" or "std()" substrings), plus the subject_id and a number representing the activity\_type. 
+ 1. The training and the test sets were merged to create one data set. Matching variable features were added to describe the columns.
+ 2. Only the measurements containing the mean or the standard deviation were selected (feature name should contain either the "mean()" or "std()" substrings), plus the subject\_id and a number representing the activity\_type. 
  3. Activity types numbers were replaced with factors in order to create descriptive activity names.
  4. A set of `gsub` commands was performed in order to beautify the variable names, and make them legal CamelCase.
  5. A tidy data set was created by averaging each of the variables for each activity and each subject.
