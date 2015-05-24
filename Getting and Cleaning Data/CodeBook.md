@@ -4,6 +4,8 @@ This is a description of variables involved in the tidy data. Each variable has 
 
 ----------
 
+Variable Description
+------------
  - subject_id
 	 - Integer variable between 1-30
 	 - Unique identifier for a subject in the experiment 
@@ -52,3 +54,63 @@ This is a description of variables involved in the tidy data. Each variable has 
  - timeGravityAccMag_std
 	 - Double variable
 	 - Standard deviation of the magnitude of the gravity acceleration time domain over the 3 dimensions as measured by accelerometer
+ - timeBodyAccJerkMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration time domain jerk signal over the 3 dimensions as measured by accelerometer
+ - timeBodyAccJerkMag_std
+	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration time domain jerk signal over the 3 dimensions as measured by accelerometer
+ - timeBodyGyroMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration time domain over the 3 dimensions  as measured by gyroscope
+ - timeBodyGyroMag_std
+ 	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration time domain over the 3 dimensions  as measured by gyroscope 
+ - timeBodyGyroJerkMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration time domain jerk signal over the 3 dimensions as measured by gyroscope
+ - timeBodyGyroJerkMag_std
+ 	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration time domain jerk signal over the 3 dimensions as measured by gyroscope
+ - frequencyBodyAcc\_mean_x/y/z
+	 - Double variable
+	 - Mean of the body acceleration frequency domain signal over the x/y/z axis, measured by accelerometer
+ - frequencyBodyAcc\_std_x/y/z
+	 - Double variable
+	 - Standard deviation of the body acceleration frequency domain signal over the x/y/z axis, measured by accelerometer
+ - frequencyBodyAccJerk\_mean_x/y/z
+ 	 - Double variable
+	 - Mean of the body acceleration frequency domain jerk signal over the x/y/z axis, measured by accelerometer
+ - frequencyBodyAccJerk\_std_x/y/z
+ 	 - Double variable
+	 - Standard deviation of the body acceleration frequency domain jerk signal over the x/y/z axis, measured by accelerometer
+ - frequencyBodyGyro\_mean_x/y/z
+	 - Double variable
+	 - Mean of the body acceleration frequency domain jerk signal over the x/y/z axis, measured by gyroscope
+ - frequencyBodyGyro\_std_x/y/z
+ 	 - Double variable
+	 - Standard deviation of the body acceleration frequency domain jerk signal over the x/y/z axis, measured by gyroscope
+ - frequencyBodyAccMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration frequency domain over the 3 dimensions  as measured by accelerometer
+ - frequencyBodyAccMag_std
+	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration frequency domain over the 3 dimensions  as measured by accelerometer
+ - frequencyBodyAccJerkMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration frequency domain jerk signal over the 3 dimensions as measured by accelerometer
+ - frequencyBodyAccJerkMag_std
+	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration frequency domain jerk signal over the 3 dimensions as measured by accelerometer
+ - frequencyBodyGyroMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration frequency domain over the 3 dimensions  as measured by gyroscope
+ - frequencyBodyGyroMag_std
+	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration frequency domain over the 3 dimensions  as measured by gyroscope
+ - frequencyBodyGyroJerkMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration frequency domain jerk signal over the 3 dimensions as measured by gyroscope
+ - frequencyBodyGyroJerkMag_std
+ 	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration frequency domain jerk signal over the 3 dimensions as measured by gyroscope
