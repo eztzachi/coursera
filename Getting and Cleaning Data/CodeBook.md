@@ -1,6 +1,6 @@
 **Code Book**
 ============================
-This is a description of variables involved in the tidy data. Each variable has a stated: type, possible values, and definition.
+This is a description of variables involved in the tidy data and how they were obtained and processed. Each variable has a stated: type, possible values, and definition.
 
 ----------
 
