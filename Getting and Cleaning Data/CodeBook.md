@@ -4,7 +4,7 @@ This is a description of variables involved in the tidy data. Each variable has 
 
 ----------
 
-How the variables created
+How were the variables created
 ------------
 > **Note:**
 > The following description of the data variables is based on the features_info.txt file, which is part of the [raw data](https://d396qusza40orc.cloudfront.net/getdata/projectfiles/UCI%20HAR%20Dataset.zip).
