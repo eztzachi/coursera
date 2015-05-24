@@ -4,7 +4,18 @@ This is a description of variables involved in the tidy data. Each variable has 
 
 ----------
 
-Variable Description
+How the variables created
+------------
+> **Note:**
+> The following description of the data variables is based on the features_info.txt file, which is part of the [raw data](https://d396qusza40orc.cloudfront.net/getdata/projectfiles/UCI%20HAR%20Dataset.zip).
+
+The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals. These time domain signals were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. Similarly, the acceleration signal was then separated into body and gravity acceleration signals using another low pass Butterworth filter with a corner frequency of 0.3 Hz. 
+
+Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals. Also the magnitude of these three-dimensional signals were calculated using the Euclidean norm. 
+
+Finally a Fast Fourier Transform (FFT) was applied to some of these signals producing the frequency domain signals. 
+
+Full variable Description
 ------------
  - subject_id
 	 - Integer variable between 1-30
