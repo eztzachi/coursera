@@ -28,3 +28,27 @@ This is a description of variables involved in the tidy data. Each variable has 
  - timeBodyAccJerk\_std_x/y/z
 	 - Double variable
 	 - Standard deviation of the body acceleration time domain jerk signal over the x/y/z axis, measured by accelerometer
+ - timeBodyGyro\_mean_x/y/z
+	 - Double variable
+	 - Mean of the body acceleration time domain jerk signal over the x/y/z axis, measured by gyroscope
+ - timeBodyGyro\_std_x/y/z
+	 - Double variable
+	 - Standard deviation of the body acceleration time domain jerk signal over the x/y/z axis, measured by gyroscope
+ - timeBodyGyroJerk\_mean_x/y/z
+	 - Double variable
+	 - Mean of the body acceleration time domain jerk signal over the x/y/z axis, measured by gyroscope 
+ - timeBodyGyroJerk\_std_x/y/z
+	 - Double variable
+	 - Standard deviation of the body acceleration time domain jerk signal over the x/y/z axis, measured by gyroscope 
+ - timeBodyAccMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the body acceleration time domain over the 3 dimensions  as measured by accelerometer
+ - timeBodyAccMag_std
+	 - Double variable
+	 - Standard deviation of the magnitude of the body acceleration time domain over the 3 dimensions as measured by accelerometer
+ - timeGravityAccMag_mean
+	 - Double variable
+	 - Mean of the magnitude of the gravity acceleration time domain over the 3 dimensions as measured by accelerometer
+ - timeGravityAccMag_std
+	 - Double variable
+	 - Standard deviation of the magnitude of the gravity acceleration time domain over the 3 dimensions as measured by accelerometer
