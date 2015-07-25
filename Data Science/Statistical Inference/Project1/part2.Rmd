@@ -1,0 +1,91 @@
+---
+title: "Statistical Inference Project - Part 2"
+author: "Tzachi Ezra Torf-Fulton"
+date: "July 23, 2015"
+output: pdf_document
+---
+
+## Overview
+In this project we will analyze the ToothGrowth data in the R datasets package.
+We will compare the impact on the tooth length of guinea pigs by using 2 
+different supplement types, orange juice (OJ) or ascorbic acid (VC), at each of 
+three dose levels of Vitamin C (0.5, 1, and 2 mg)
+
+## Basic summary of the ToothGrowth data
+
+### Loading and preprocessing the data
+
+```{r}
+# Load ToothGrowth data
+library(datasets)
+library(ggplot2)
+data(ToothGrowth)
+
+# Change the dose attribute to be a factor. Thiw will help with the graphs
+# coloring.
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+```
+
+### Data Summary
+
+The data consists of 6 sets of 10 guinea pigs teeth samples. Each set relates to 
+on of three dose levels of Vitamin C (0.5, 1, and 2 mg), and one of two 
+delivery methods (orange juice or ascorbic acid). Here are the raw statistics:
+
+```{r}
+summary(ToothGrowth)
+```
+
+### Box plot
+
+A good way to visualize the data is by using box plots:
+
+```{r}
+p <- ggplot(ToothGrowth, aes(factor(supp), x = dose, y=len, fill=supp))
+p + geom_boxplot() + labs(x="Vitamin C Dose levels [mg]", y="Tooth length")
+```
+
+## Compare tooth growth by supplement and dose
+
+To decide if OJ and VC have the same effect on teeth length, we will coduct 3
+tests comparing the different supplement for each dosage. Our null hypothesis
+(H0) is that OJ and VC has the same effect, and therefore the mean of the 
+difference between the samples be around 0. We will check this hypothesis
+against each one of the 3 tests. 
+
+Since the ToothGrowth doesn't state it, 
+we will assume that there is no pairing betweem the sample groups. We also don't 
+assume equal variance.
+
+```{r}
+# Split data by dosage and supplement
+tables <- split(ToothGrowth,list(ToothGrowth$dose,ToothGrowth$supp))
+```
+
+### 0.5[mg] dosage
+```{r}
+t.test(tables$'0.5.VC'$len - tables$'0.5.OJ'$len, paired=F, var.equal=F)
+```
+
+### 1[mg] dosage
+```{r}
+t.test(tables$'1.VC'$len - tables$'1.OJ'$len, paired=F, var.equal=F)
+```
+
+### 2[mg] dosage
+```{r}
+t.test(tables$'2.VC'$len - tables$'2.OJ'$len, paired=F, var.equal=F)
+```
+
+## Conclusion
+
+### 0.5[mg] and 1[mg]
+It is possible to see that we get very small p-values, and the 95% confidence 
+interval does not include zero, meaning that we can reject H0, and cannot assume 
+the same effect using OJ and VC. Also, the fact that we get negative mean suggests
+that OJ has a better effect on teeth growth.
+
+### 2[mg]
+We can see a high p-value, a 95% confidence interval that contain zero, and a 
+mean which is close to 0, therefore we cannnot reject H0 and can assume that
+for that dosage the effect of using OJ or VC is similar.
