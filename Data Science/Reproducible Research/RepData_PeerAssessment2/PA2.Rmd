@@ -8,3 +8,84 @@ output: html_document
 # Impact of severe weather events on public health and economy in the United States
 
 ## Synopsis
+
+In this report we analyse the impact of several weather events on the population
+health and the economy, based on a public databased maintained by the U.S. National 
+Oceanic and Atmospheric Administration’s (NOAA) and between the years 1950 and 
+2011.
+
+## Data Processing
+
+##### Download the data
+
+```{r warning=FALSE, message=FALSE}
+library(R.utils)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+library(stringr)
+
+# check if raw csv file exist, if not download and upzip it
+if (!file.exists("stormData.csv")) {
+    if (!file.exists("stormData.csv.bz2")) {
+        download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2",
+                      "stormData.csv.bz2", method = "curl")
+    }
+    # unzip file
+    bunzip2("stormData.csv.bz2", remove = FALSE)
+}
+```
+
+##### Load the data
+
+```{r cache=TRUE}
+csvStormData <- tbl_df(read.csv("stormData.csv"))
+```
+
+```{r cache=TRUE}
+csvStormData <- csvStormData %>%
+    mutate(BGN_YEAR = year(mdy_hms(BGN_DATE))) %>%
+    select(BGN_YEAR, EVTYPE, FATALITIES, INJURIES, 
+                       PROPDMG, PROPDMGEXP, CROPDMG, CROPDMGEXP)
+```
+
+## Results
+
+```{r}
+eventsPerYear <- csvStormData %>%
+    group_by(BGN_YEAR) %>%
+    summarise(count = n())
+qplot(x=BGN_YEAR, y=count, data=eventsPerYear,  geom="bar", stat="identity", 
+      fill=I("blue"), col=I("darkgreen"), alpha=I(.2))
+```
+
+```{r warning=FALSE}
+# helper function to convert PROPDMGEXP and CROPDMGEXP to numeric values
+convertExp <- function (x) {
+    ifelse(tolower(x)=="h", 2,
+           ifelse(tolower(x)=="k", 3,
+                  ifelse(tolower(x)=="m", 6, 
+                         ifelse(tolower(x)=="b", 9, 
+                                ifelse(str_trim(x)=="", 0, extract_numeric(x))))))
+}
+
+# filter by 1995 and convert exponent charaters to numbers
+relData <- csvStormData %>%
+    filter(BGN_YEAR >= 1995) %>%
+    mutate(PROPDMGEXP = convertExp(PROPDMGEXP)) %>%
+    mutate(CROPDMGEXP = convertExp(CROPDMGEXP)) %>%
+    mutate(PROPDMG = ifelse(is.na(PROPDMGEXP), NA, PROPDMG * (10 ^ PROPDMGEXP))) %>%
+    mutate(CROPDMG = ifelse(is.na(CROPDMGEXP), NA, CROPDMG * (10 ^ CROPDMGEXP)))
+```
+
+```{r}
+healthData <- relData %>%
+    select(BGN_YEAR, EVTYPE, FATALITIES, INJURIES)
+
+economyData <- relData %>%
+    select(BGN_YEAR, EVTYPE, PROPDMG, CROPDMG)
+
+healthData
+economyData
+```
