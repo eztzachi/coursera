@@ -1,0 +1,10 @@
+---
+title: "Reproducible Research - Peer Assessment 2"
+author: "Tzachi Ezra Torf-Fulton"
+date: "July 25, 2015"
+output: html_document
+---
+
+# Impact of severe weather events on public health and economy in the United States
+
+## Synopsis
