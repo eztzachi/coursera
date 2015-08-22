@@ -5,18 +5,24 @@ date: "July 25, 2015"
 output: html_document
 ---
 
-# Impact of severe weather events on public health and economy in the United States
+# Impact of Severe Weather Events on Public Health and Economy in the United States
 
 ## Synopsis
 
-In this report we analyse the impact of several weather events on the population
-health and the economy, based on a public databased maintained by the U.S. National 
+In this report we analyze the impact of several weather events on the population
+health and the economy, based on a public database maintained by the U.S. National 
 Oceanic and Atmospheric Administration’s (NOAA) and between the years 1950 and 
-2011.
+2011. We will examine which events are the most harmful in terms of physical and 
+financial damage.
+
+Given the data we were able to find out that excessive heat is the main cause
+for fatalities, followed by tornado. The later though, is by far the main cause 
+for injuries. When we look at property damage we find that flood is the main
+cause, where drought is the top reason for crop damage.
 
 ## Data Processing
 
-##### Download the data
+### Load necessary libraries
 
 ```{r warning=FALSE, message=FALSE}
 library(R.utils)
@@ -25,7 +31,12 @@ library(ggplot2)
 library(lubridate)
 library(tidyr)
 library(stringr)
+library(gridExtra)
+```
 
+### Download and extract the source file
+ 
+```{r warning=FALSE, message=FALSE}
 # check if raw csv file exist, if not download and upzip it
 if (!file.exists("stormData.csv")) {
     if (!file.exists("stormData.csv.bz2")) {
@@ -37,31 +48,62 @@ if (!file.exists("stormData.csv")) {
 }
 ```
 
-##### Load the data
+### Loading and preprocessing the data
+
+We will use data frame table as our data holder as they are very powerful in 
+processing big data sources. We will override the BGN_YEAR field with the year
+value only, and will add to it the following fields (as the other are not) 
+relevant for this analysis: BGN_YEAR, EVTYPE, FATALITIES, INJURIES, PROPDMG, 
+PROPDMGEXP, CROPDMG, CROPDMGEXP
 
 ```{r cache=TRUE}
 csvStormData <- tbl_df(read.csv("stormData.csv"))
-```
 
-```{r cache=TRUE}
+# extract the year value and select the relevant coulmns for the analysis
 csvStormData <- csvStormData %>%
     mutate(BGN_YEAR = year(mdy_hms(BGN_DATE))) %>%
     select(BGN_YEAR, EVTYPE, FATALITIES, INJURIES, 
                        PROPDMG, PROPDMGEXP, CROPDMG, CROPDMGEXP)
 ```
 
-## Results
+### Preview the number of events per year
+
+To get a sense of the data, here is the total number of event records per
+year.
 
 ```{r}
+# group events by year
 eventsPerYear <- csvStormData %>%
     group_by(BGN_YEAR) %>%
     summarise(count = n())
+
+# plot bar graph
 qplot(x=BGN_YEAR, y=count, data=eventsPerYear,  geom="bar", stat="identity", 
-      fill=I("blue"), col=I("darkgreen"), alpha=I(.2))
+      fill=I("blue"), col=I("darkgreen"), alpha=I(.2), xlab="Year", 
+      ylab="Number of Events", main="Total Number of Severe Weather Events by Year")
 ```
 
+It is possible to see that until 1995 the number of events was very low, 
+most likely due to a lack of good records. Therefore, in order to minimize the 
+skew, in this report we will examine only events since 1995 (including).
+
+```{r}
+relevantData <- csvStormData %>%
+    filter(BGN_YEAR >= 1995)
+```
+
+### Standardize PROPDMGEXP and CROPDMGEXP and calculate PROPDMG and CROPDMG
+
+The next step in processing the data will be to normalize the raw values in
+PROPDMGEXP and CROPDMGEXP to numeric fields. In case the raw field has numeric 
+value we will keep it as is. Then we will convert H, K, M, B values to their
+numeric exponent values 2, 3, 6, 9 (respectively). Empty values we be treated as 
+0, and all the other characters will be considered as NA. The next step will be
+to adjust PROPDMG and CROPDMG according to their raw value and their normalized 
+exponent value.
+
 ```{r warning=FALSE}
-# helper function to convert PROPDMGEXP and CROPDMGEXP to numeric values
+# helper function to convert PROPDMGEXP and CROPDMGEXP raw values to numeric values
 convertExp <- function (x) {
     ifelse(tolower(x)=="h", 2,
            ifelse(tolower(x)=="k", 3,
@@ -71,21 +113,135 @@ convertExp <- function (x) {
 }
 
 # filter by 1995 and convert exponent charaters to numbers
-relData <- csvStormData %>%
-    filter(BGN_YEAR >= 1995) %>%
+relevantData <- relevantData %>%
     mutate(PROPDMGEXP = convertExp(PROPDMGEXP)) %>%
     mutate(CROPDMGEXP = convertExp(CROPDMGEXP)) %>%
     mutate(PROPDMG = ifelse(is.na(PROPDMGEXP), NA, PROPDMG * (10 ^ PROPDMGEXP))) %>%
     mutate(CROPDMG = ifelse(is.na(CROPDMGEXP), NA, CROPDMG * (10 ^ CROPDMGEXP)))
 ```
 
-```{r}
-healthData <- relData %>%
+### Breaking down the data
+
+Now we can start looking at the health and economy impacts. For the health part,
+we will split the data between fatalities and injuries and count the total number
+of reported incidents by event type. For the economy part, we will split the data
+between property ad crop, and count the total damage cost for each one. In this
+report we will show the top 10 of each sub category.
+
+```{r message=FALSE}
+# select only health related data
+healthData <- relevantData %>%
     select(BGN_YEAR, EVTYPE, FATALITIES, INJURIES)
 
-economyData <- relData %>%
+# select only economy related data
+economyData <- relevantData %>%
     select(BGN_YEAR, EVTYPE, PROPDMG, CROPDMG)
 
-healthData
-economyData
+# extract fatalities from health related data, count total number of incidents
+# based on event-type, arrange in decreasing order and select top 10
+fatalities <- healthData %>%
+    group_by(EVTYPE) %>%
+    summarise(FATALITIES = sum(FATALITIES)) %>%
+    select(EVTYPE, FATALITIES) %>%
+    arrange(desc(FATALITIES)) %>%
+    top_n(10)
+
+# extract injuries from health related data, count total number of incidents
+# based on event-type, arrange in decreasing order and select top 10
+injuries <- healthData %>%
+    group_by(EVTYPE) %>%
+    summarise(INJURIES = sum(INJURIES)) %>%
+    select(EVTYPE, INJURIES) %>%
+    arrange(desc(INJURIES)) %>%
+    top_n(10)
+    
+# extract property damage from economy related data, remove NAs, count total number of 
+# incidents based on event-type, arrange in decreasing order and select top 10
+propertyDamage <- economyData %>%
+    select(BGN_YEAR, EVTYPE, PROPDMG) %>%
+    na.omit() %>%
+    group_by(EVTYPE) %>%
+    summarise(PROPDMG = sum(PROPDMG)) %>%
+    arrange(desc(PROPDMG)) %>%
+    top_n(10)
+
+# extract crop damage from economy related data, remove NAs, count total number of 
+# incidents based on event-type, arrange in decreasing order and select top 10
+cropDamage <- economyData %>%
+    select(BGN_YEAR, EVTYPE, CROPDMG) %>%
+    na.omit() %>%
+    group_by(EVTYPE) %>%
+    summarise(CROPDMG = sum(CROPDMG)) %>%
+    arrange(desc(CROPDMG)) %>%
+    top_n(10)
 ```
+
+## Results
+
+In the following tables we will summaries the top 10 causes for fatalities and 
+injuries, as well as the top 10 causes for property and crop damage. 
+
+### Fatalities and Injuries
+
+```{r, message=FALSE}
+# set event type as factor to maintain the order in the graph
+fatalities$EVTYPE <- factor(fatalities$EVTYPE, levels=fatalities$EVTYPE)
+#prepare the plot for fatalities
+fatalitiesPlot <- qplot(x=EVTYPE, y=FATALITIES, data = fatalities, geom = "bar", 
+                      stat="identity", fill=I("red"), col=I("black"), alpha=I(.4)) + 
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1, size=8)) + 
+    scale_y_continuous("Number of Fatalities") + xlab("Event Type")
+
+# set event type as factor to maintain the order in the graph
+injuries$EVTYPE <- factor(injuries$EVTYPE, levels=injuries$EVTYPE)
+#prepare the plot for injuries
+injuriesPlot <- qplot(x=EVTYPE, y=INJURIES, data = injuries, geom = "bar", 
+                      stat="identity", fill=I("orange"), col=I("black"), alpha=I(.4)) + 
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1, size=8)) + 
+    scale_y_continuous("Number of Injuries") + xlab("Event Type")
+
+# print the plots side by side
+grid.arrange(fatalitiesPlot, injuriesPlot, ncol = 2,
+    main = "Total Number of Fatalities and Injuries by Severe Weather Events 
+    Between 1995 and 2011 in ths US")
+```
+
+It is possible to see that Excessive Heat and Tornados are the main cause of
+fatalities and injuries (respectively).
+
+### Property and Crop Damage
+```{r, message=FALSE}
+# set event type as factor to maintain the order in the graph
+propertyDamage$EVTYPE <- factor(propertyDamage$EVTYPE, levels=propertyDamage$EVTYPE)
+#prepare the plot for property
+propertyPlot <- qplot(x=EVTYPE, y=PROPDMG, data = propertyDamage, geom = "bar", 
+                      stat="identity", fill=I("green"), col=I("black"), alpha=I(.4)) + 
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1, size=8)) + 
+    scale_y_continuous("Property Damage in US Dollars") + xlab("Event Type")
+
+# set event type as factor to maintain the order in the graph
+cropDamage$EVTYPE <- factor(cropDamage$EVTYPE, levels=cropDamage$EVTYPE)
+#prepare the plot for crop
+cropPlot <- qplot(x=EVTYPE, y=CROPDMG, data = cropDamage, geom = "bar", 
+                  stat="identity", fill=I("blue"), col=I("black"), alpha=I(.4)) + 
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1, size=8)) + 
+    scale_y_continuous("Crop Damage in US Dollars") + xlab("Event Type")
+
+# print the plots side by side
+grid.arrange(propertyPlot, cropPlot, ncol=2,
+    main = "Total Amount of Property and Crop Damaage in US Dollars by Severe 
+    Weather Events Between 1995 and 2011 in ths US")
+```
+
+It is possible to see that Flood and Drought are the main cause of property and 
+crop damage in US dollars (respectively).
+
+## Conclusion Notes
+
+While making the report, and as possible to see in the graphs above, the NOAA
+graph is lacking standardization. Although we were able to "fix" the PROPDMGEXP
+and CROPDMGEXP columns for this report, one can see that a significant work should
+be done regarding the EVTYPE column. One of many examples can be seen at the
+Crop Damage table, where Hurricane and Hurricane/Typhon are stated as different
+events. This kind of phenomena causes the results to be skewed from the real
+aggregated results per an event type.

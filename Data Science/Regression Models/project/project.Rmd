@@ -1,0 +1,184 @@
+---
+title: "Relationship Between Transmission Type and MPG"
+author: "Tzachi Ezra Torf-Fulton"
+date: "August 18, 2015"
+output: pdf_document
+---
+
+# Relationship Between Transmission Type and MPG
+
+## Executive Summary
+
+In this report we analyzed the relationship between a set of variables 
+and miles per gallon (MPG), based on a data that was extracted from the 1974 Motor 
+Trend US magazine (mtcars - https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html). 
+We focused in particular on quantifying the MPG difference between automatic and 
+manual transmissions and determine whether an automatic or manual transmission 
+better for MPG.
+
+Given the data we were able to find out that 
+excessive heat is the main cause
+for fatalities, followed by tornado. The later though, is by far the main cause 
+for injuries. When we look at property damage we find that flood is the main
+cause, where drought is the top reason for crop damage.
+
+## Data Processing
+### Loading libraries and preprocessing the data
+```{r warning=FALSE, message=FALSE}
+library(ggplot2)
+data(mtcars)
+fmtcars<-mtcars
+fmtcars$am <- factor(mtcars$am, labels=c("Automatic", "Manual"))
+```
+
+To get a sense of the relation between Transmission Type and MPG, we will start with
+a general boxplot of these two variables.
+
+```{r fig.height=2, fig.width=6, fig.align='center'}
+p <- ggplot(fmtcars, aes(factor(am), x=am, y=mpg, fill=am))
+p + geom_boxplot() + labs(x="Transmission Type", y="MPG") + 
+    scale_fill_discrete(name="Transmission Type") + 
+    theme(axis.text.x = element_text(angle=45, hjust=1, vjust=1, size=8),
+          axis.text.y = element_text(size=8), axis.title=element_text(size=9,face="bold")) 
+```
+
+Looking at this plot alone might lead to conclusion that manual transmission
+has better mpg compare to automatic transmission. We will try to build a model
+based on this assumption, and see how well it performs and whether transmission
+type itself can be a good predictor on the mpg of a car.
+
+### Single Variant Regression
+In this first model we will try to fit the transmission type as a predictor for
+a car's mpg.
+```{r}
+fit <- lm(mpg~am, data = fmtcars)
+summary(fit)
+```
+
+From this model we can say that in average, given that all other factors do not
+change, an automatic transmission underperform a manual one by 7.245 mpg. 
+But looking carfuly we can see that the adjusted R-squared value is 33.85%, 
+meaning that only 33.85% of the variation of the data can be explained by looking 
+on transmission type alone.
+
+This low adjusted R-squared value tells us that a model based on only on 
+transmission type is not suffice to predict the mpg of a car.
+
+```{r echo=FALSE}
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+```
+
+### Multi Variant Regression
+
+In order to decide which predictors we should pick for our model, let's take a
+look at the correlation of mpg to each of the other variabls in the mtcars data set:
+```{r}
+sort(cor(mtcars)[1,])
+```
+
+From these results, it looks like there is a strong relationship between the 
+weight of a car to its mpg. Also, from the graphs in Appendix-1, it is possible
+to see that for all the variables, besides qsec, there is a strong separation
+in values between manual and automatic transmission. This makes qsec (1/4 mile time) 
+a very interesting variable as it is seems non-dependant in the other variables 
+(in constrast for example to cyl and wt which seem very correlated).
+
+We will add wt and qsec to our base model and see how it impacts the base model:
+
+```{r}
+fit1<-lm(mpg~am,data=fmtcars)
+fit3<-update(fit1,mpg~am+wt)
+fit5<-update(fit1,mpg~am+wt+qsec)
+anova(fit1,fit3,fit5)
+```
+
+From the anova output, one can see that each of the extra variables is very significant 
+(high RSS change, low P-value) to the model. It also means that we reject the
+null hypothesis that our new modal is similar to the single-variable model.
+Now that we belive we have a strong model we will check how well it performs.
+
+```{r}
+multiFit <- lm(mpg~am+wt+qsec, data = fmtcars)
+summary(multiFit)
+```
+
+Our new model has an adjusted R-squared value of 83.36% which is significantly higher 
+than our basic model. It also has a siginificant lower p-value, 1.21e-11, which means 
+that extreme results using this model are far less common. Also, our multi-variant model 
+residual plot (Appendix-2) shows that the points randomly dispersed around the horizontal axis, 
+meaning a linear regression model is appropriate for the data. All these makes
+this multi-variant model a stronger thesis.
+
+
+### Regression Results Summary
+
+As we take a look at the impact of transmission type on mpg using our last model,
+we can see that manual transmission type makes an average car mpg higher by only 
+2.9358 mpg. This is about 60% less our base analysis.
+
+## Appendix
+
+### Appendix-1
+```{r fig.height=4}
+variables <- c("cyl","disp","hp","drat","wt","qsec","vs","gear","carb")
+plots <- list()
+for (i in 1:length(variables)) {
+    p<-ggplot(fmtcars, aes_string((variables[i]), "mpg", col="am")) + 
+        geom_point() + theme(legend.position='none')
+    plots[[i]]<-p
+}
+multiplot(plotlist = plots,  cols = 3)
+```
+
+The code for the multiplot function is taken from: 
+http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+
+### Appendix-2
+```{r fig.height=4}
+par(mfrow = c(2,2))
+plot(multiFit)
+```
